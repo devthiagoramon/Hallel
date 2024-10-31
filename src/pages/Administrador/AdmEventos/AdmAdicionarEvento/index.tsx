@@ -10,16 +10,19 @@ import TitleH from "components/TitleH";
 import dayjs from "dayjs";
 import { ADM_QUERIES } from "hooks/queryConsts";
 import { useSnackbar } from "notistack";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft, List, Trash } from "phosphor-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
     AddEditEventAdmDTO,
+    ListMinisterioDTO,
     LocationMapType,
 } from "types/admDTOTypes";
 import { maskForValueInReal } from "utils/masks";
 import * as yup from "yup";
+import ModalSelecionarMinisterio from "../components/ModalSelecionarMinisterio";
+import { ModalSelecionarMinisterioItem } from "../components/ModalSelecionarMinisterio/style";
 import {
     AdmAdicionarEditarEventoContainer,
     AdmAdicionarEditarEventoForm,
@@ -73,6 +76,12 @@ const AdmAdicionarEvento = () => {
     const [errorBanner, setErrorBanner] = useState<boolean>(false);
     const [errorImagem, setErrorImagem] = useState<boolean>(false);
 
+    const [ministerioSelected, setMinisterioSelected] = useState<
+        ListMinisterioDTO[]
+    >([]);
+    const [showMinisteriosModal, setShowMinisteriosModal] =
+        useState<boolean>(false);
+
     const [isPago, setIsPago] = useState<boolean>(false);
     const [locationInfos, setLocationInfos] =
         useState<LocationMapType>();
@@ -85,6 +94,8 @@ const AdmAdicionarEvento = () => {
         if (!validateForms()) {
             return;
         }
+
+        let ministerioIdsSelecionados = ministerioSelected.map((item) => item.id) || [];
 
         try {
             const dto: AddEditEventAdmDTO = {
@@ -99,6 +110,7 @@ const AdmAdicionarEvento = () => {
                     longitude: locationInfos?.lng,
                 },
                 titulo: data.titulo,
+                ministeriosAssociados: ministerioIdsSelecionados.length === 0 ? undefined : ministerioIdsSelecionados,
                 valorDoEvento: data.valorDoEvento || 0,
             };
             const response = await adicionarEventAdmService(dto);
@@ -226,6 +238,41 @@ const AdmAdicionarEvento = () => {
                                 error: !!errors["localizacao"],
                                 helperText: errors["localizacao"]?.message,
                             }}
+                        />
+                    </div>
+                    <div className="input-container">
+                        <label className="form-controller">
+                            Ministérios participantes
+                            <IconButton
+                                onClick={() => {
+                                    setShowMinisteriosModal(!showMinisteriosModal);
+                                }}
+                            >
+                                <List size={28} />
+                            </IconButton>
+                        </label>
+                        <div style={{ maxHeight: 120, overflowY: "auto" }}>
+                            {ministerioSelected.map((item, index) => {
+                                return <ModalSelecionarMinisterioItem key={index}>
+                                    <div className="left">
+                                        <img className="image" src={item.imagem} alt={item.nome} />
+                                        <label className="title">{item.nome}</label>
+                                    </div>
+                                    <IconButton onClick={() => {
+                                        let ministeriosSelectedProv = ministerioSelected.filter((itemFilter) => itemFilter !== item);
+                                        setMinisterioSelected(ministeriosSelectedProv);
+                                    }}>
+                                        <Trash size={24} color="#F44336" />
+                                    </IconButton>
+                                </ModalSelecionarMinisterioItem>
+                            })}
+                        </div>
+                        <ModalSelecionarMinisterio
+                            onClose={() => setShowMinisteriosModal(false)}
+                            children={<></>}
+                            open={showMinisteriosModal}
+                            ministeriosSelected={ministerioSelected}
+                            setMinisterios={setMinisterioSelected}
                         />
                     </div>
                     <div className="input-container">

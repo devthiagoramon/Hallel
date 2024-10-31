@@ -60,6 +60,31 @@ const TableAdmEvents = ({ events }: TableAdmEventsProps) => {
 
     const columns: GridColDef[] = [
         {
+            field: "",
+            headerName: "Ações",
+            disableColumnMenu: true,
+            disableReorder: false,
+            sortable: false,
+            renderCell: (params) => (
+                <ActionsTableContainer>
+                    <Tooltip title="Editar evento">
+                        <IconButton
+                            onClick={() => handleEditEvent(params.row.id)}
+                        >
+                            <PencilSimple size={24} />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Deletar evento">
+                        <IconButton
+                            onClick={() => handleOpenDeleteModal(params.row)}
+                        >
+                            <TrashSimple size={24} className="delete" />
+                        </IconButton>
+                    </Tooltip>
+                </ActionsTableContainer>
+            ),
+        },
+        {
             field: "titulo",
             headerName: "Titulo",
             minWidth: 175,
@@ -101,31 +126,6 @@ const TableAdmEvents = ({ events }: TableAdmEventsProps) => {
             disableColumnMenu: true,
             renderCell: (params) => (
                 <RowTextComponent>{params.value}</RowTextComponent>
-            ),
-        },
-        {
-            field: "",
-            headerName: "Ações",
-            disableColumnMenu: true,
-            disableReorder: false,
-            sortable: false,
-            renderCell: (params) => (
-                <ActionsTableContainer>
-                    <Tooltip title="Editar evento">
-                        <IconButton
-                            onClick={() => handleEditEvent(params.row.id)}
-                        >
-                            <PencilSimple size={24} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Deletar evento">
-                        <IconButton
-                            onClick={() => handleOpenDeleteModal(params.row)}
-                        >
-                            <TrashSimple size={24} className="delete" />
-                        </IconButton>
-                    </Tooltip>
-                </ActionsTableContainer>
             ),
         },
     ];

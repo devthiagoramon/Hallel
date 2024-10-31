@@ -34,6 +34,7 @@ export interface AddEditEventAdmDTO {
   banner: string;
   destaque: boolean;
   valorDoEvento?: string;
+  ministeriosAssociados?: string[];
 }
 
 export interface MembroResponseListDTO {
