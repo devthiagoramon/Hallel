@@ -18,6 +18,8 @@ export interface ListEventsAdmDTO {
   horario: string;
   palestrantes: string[];
   valorDoEvento: number;
+  ministeriosAssociados: string[];
+  escalasMinisterioIds: string[];
 }
 
 export interface LocationMapType {

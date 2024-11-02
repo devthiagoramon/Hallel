@@ -11,14 +11,16 @@ import AdmLocationInput from "components/AdmLocationInput";
 import SelectImageContainerH from "components/SelectImageContainerH";
 import TitleH from "components/TitleH";
 import dayjs from "dayjs";
+import useListMinisteriosAdm from "hooks/admin/useListMinisteriosAdm";
 import { ADM_QUERIES } from "hooks/queryConsts";
 import { useSnackbar } from "notistack";
-import { CaretLeft } from "phosphor-react";
+import { CaretLeft, List, Trash } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     AddEditEventAdmDTO,
+    ListMinisterioDTO,
     LocationMapType,
 } from "types/admDTOTypes";
 import { maskForValueInReal } from "utils/masks";
@@ -28,6 +30,8 @@ import {
     AdmAdicionarEditarEventoForm,
     AdmAdicionarEditarEventoInputs,
 } from "../AdmAdicionarEvento/style";
+import ModalSelecionarMinisterio from "../components/ModalSelecionarMinisterio";
+import { ModalSelecionarMinisterioItem } from "../components/ModalSelecionarMinisterio/style";
 
 const schema = yup
     .object({
@@ -69,6 +73,18 @@ const AdmEditarEvento = () => {
     const [imagem, setImagem] = useState<
         string | ArrayBuffer | undefined
     >();
+
+    const [ministerioSelected, setMinisterioSelected] = useState<
+        ListMinisterioDTO[]
+    >([]);
+    const [ministeriosSelectedIds, setMinisteriosSelectedIds] = useState<string[]>([]);
+    const [showMinisteriosModal, setShowMinisteriosModal] =
+        useState<boolean>(false);
+
+    const query = useListMinisteriosAdm();
+    const ministerioList: ListMinisterioDTO[] = query.data || [];
+    const [loadedMinisterioSelectedFromAPI, setLoadedMinisterioSelectedFromAPI] = useState(false);
+
     const [errorBanner, setErrorBanner] = useState<boolean>(false);
     const [errorImagem, setErrorImagem] = useState<boolean>(false);
     const [isPago, setIsPago] = useState<boolean>(false);
@@ -166,7 +182,7 @@ const AdmEditarEvento = () => {
                         );
                         setIsPago(true);
                     }
-
+                    setMinisteriosSelectedIds(response.ministeriosAssociados)
                     setImagem(response.imagem);
                     setBanner(response.banner);
                 }
@@ -176,6 +192,21 @@ const AdmEditarEvento = () => {
         }
         getEventById();
     }, [idEvento]);
+
+    useEffect(() => {
+        if (!loadedMinisterioSelectedFromAPI && ministerioList.length > 0) {
+            ministeriosSelectedIds.forEach((idMinisterio) => {
+                const predicate = (ministerio: ListMinisterioDTO) => ministerio.id === idMinisterio;
+                console.log(ministerioList);
+                if (ministerioList.some(predicate)) {
+                    let indexMinisterioSelected = ministerioList.findIndex(predicate)
+                    setMinisterioSelected((prev) => [...prev, ministerioList[indexMinisterioSelected]]);
+                }
+            })
+            setLoadedMinisterioSelectedFromAPI(true);
+        }
+    }, [loadedMinisterioSelectedFromAPI, ministerioList])
+
 
     return (
         <AdmAdicionarEditarEventoContainer>
@@ -255,6 +286,42 @@ const AdmEditarEvento = () => {
                                 helperText: errors["localizacao"]?.message,
                                 value: getValues("localizacao"),
                             }}
+                        />
+                    </div>
+                    <div className="input-container">
+                        <label className="form-controller">
+                            Ministérios participantes
+                            <IconButton
+                                onClick={() => {
+                                    setShowMinisteriosModal(!showMinisteriosModal);
+                                }}
+                            >
+                                <List size={28} />
+                            </IconButton>
+                        </label>
+                        <div style={{ maxHeight: 120, overflowY: "auto" }}>
+                            {ministerioSelected.map((item, index) => {
+                                return <ModalSelecionarMinisterioItem key={index}>
+                                    <div className="left">
+                                        <img className="image" src={item.imagem} alt={item.nome} />
+                                        <label className="title">{item.nome}</label>
+                                    </div>
+                                    <IconButton onClick={() => {
+                                        let ministeriosSelectedProv = ministerioSelected.filter((itemFilter) => itemFilter !== item);
+                                        setMinisterioSelected(ministeriosSelectedProv);
+                                    }}>
+                                        <Trash size={24} color="#F44336" />
+                                    </IconButton>
+                                </ModalSelecionarMinisterioItem>
+                            })}
+                        </div>
+                        <ModalSelecionarMinisterio
+                            onClose={() => setShowMinisteriosModal(false)}
+                            children={<></>}
+                            open={showMinisteriosModal}
+                            ministeriosSelected={ministerioSelected}
+                            ministeriosIdsSelected={ministeriosSelectedIds}
+                            setMinisterios={setMinisterioSelected}
                         />
                     </div>
                     <div className="input-container">
