@@ -197,7 +197,6 @@ const AdmEditarEvento = () => {
         if (!loadedMinisterioSelectedFromAPI && ministerioList.length > 0) {
             ministeriosSelectedIds.forEach((idMinisterio) => {
                 const predicate = (ministerio: ListMinisterioDTO) => ministerio.id === idMinisterio;
-                console.log(ministerioList);
                 if (ministerioList.some(predicate)) {
                     let indexMinisterioSelected = ministerioList.findIndex(predicate)
                     setMinisterioSelected((prev) => [...prev, ministerioList[indexMinisterioSelected]]);
