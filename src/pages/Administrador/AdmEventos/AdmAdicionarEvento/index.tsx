@@ -272,6 +272,7 @@ const AdmAdicionarEvento = () => {
                             children={<></>}
                             open={showMinisteriosModal}
                             ministeriosSelected={ministerioSelected}
+                            
                             setMinisterios={setMinisterioSelected}
                         />
                     </div>
