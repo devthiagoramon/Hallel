@@ -222,6 +222,8 @@ const AdmAdicionarEvento = () => {
                             onChange={(value) =>
                                 setValue("date", value?.toISOString() || "")
                             }
+                            format="DD/MM/YYYY HH:mm"
+                            ampm={false}
                         />
                     </div>
                     <div className="input-container">
@@ -272,7 +274,7 @@ const AdmAdicionarEvento = () => {
                             children={<></>}
                             open={showMinisteriosModal}
                             ministeriosSelected={ministerioSelected}
-                            
+
                             setMinisterios={setMinisterioSelected}
                         />
                     </div>
