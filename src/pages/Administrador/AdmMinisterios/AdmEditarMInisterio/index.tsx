@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Textarea from "@mui/joy/Textarea";
 import { Button, TextField } from "@mui/material";
-import { editarMinisterioAdmService, listMinisterioByIdAdmService } from "api/admin/ministerios/admMinisterioAPI";
+import { editarMinisterioV2AdmService, listMinisterioByIdV2AdmService } from "api/admin/ministerios/admMinisterioAPI";
 import AdmListSelectUserH from "components/AdmListSelectUserH";
 import { LabelInputH } from "components/LabelInputH/style";
 import SelectImageContainerH from "components/SelectImageContainerH";
@@ -12,9 +12,12 @@ import AdmHeaderH from "pages/Administrador/components/AdmHeaderH";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { MembroResponseListDTO, MinisterioAdmDTO } from "types/admDTOTypes";
+import { MembroResponseListDTO, MinisterioAdmDTOV2 } from "types/admDTOTypes";
 import * as yup from "yup";
 import ObjetivosAdmMinisterio from "../AdmAdicionarMinisterio/components/ObjetivosAdmMinisterio";
+import SupportDancaAdmMinisterio from "../AdmAdicionarMinisterio/components/SupportDancaAdmMinisterio";
+import SupportMusicAdmMinisterio from "../AdmAdicionarMinisterio/components/SupportMusicAdmMinisterio";
+import SupportRepertorioAdmMinisterio from "../AdmAdicionarMinisterio/components/SupportRepertorioAdmMinisterio";
 import { AdmMinisterioForms } from "../AdmAdicionarMinisterio/style";
 
 const schema = yup
@@ -51,6 +54,11 @@ const AdmEditarMinisterio = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigation = useNavigate();
 
+    const [enabledRepertorio, setEnabledRepertorio] =
+        useState<boolean>(false);
+    const [enabledMusic, setEnabledMusic] = useState<boolean>(false);
+    const [enabledDance, setEnabledDance] = useState<boolean>(false);
+
     // Errors states
     const [errorImagem, setErrorImagem] = useState<boolean>(false);
     const [errorCoordenador, setErrorCoordenador] =
@@ -67,16 +75,19 @@ const AdmEditarMinisterio = () => {
         }
 
         try {
-            const dto: MinisterioAdmDTO = {
+            const dto: MinisterioAdmDTOV2 = {
                 coordenadorId: coordenador?.id || "",
                 descricao: data.descricao,
                 imagem: imageMinisterio?.toString() || "",
                 nome: data.nome,
                 objetivos,
                 viceCoordenadorId: viceCoordenador?.id || "",
+                hasRepertorio: enabledRepertorio,
+                hasDance: enabledDance && enabledRepertorio,
+                hasMusic: enabledMusic && enabledRepertorio,
             };
 
-            const response = await editarMinisterioAdmService(idMinisterio, dto);
+            const response = await editarMinisterioV2AdmService(idMinisterio, dto);
             if (response) {
                 enqueueSnackbar("Ministério editado com sucesso", { variant: "success" });
                 navigation(-1);
@@ -115,12 +126,15 @@ const AdmEditarMinisterio = () => {
                 return;
             }
             try {
-                const response = await listMinisterioByIdAdmService(idMinisterio);
+                const response = await listMinisterioByIdV2AdmService(idMinisterio);
                 setObjetivos(response.objetivos)
                 setImageMinisterio(response.imagem)
                 setValue("descricao", response.descricao)
                 setValue("nome", response.nome)
                 setValue("objetivos", response.objetivos)
+                setEnabledDance(response.hasDance);
+                setEnabledMusic(response.hasMusic);
+                setEnabledRepertorio(response.hasRepertorio);
             } catch (error) {
                 console.error(error)
             }
@@ -160,6 +174,24 @@ const AdmEditarMinisterio = () => {
                         objetivos={objetivos}
                         setObjetivos={setObjetivos}
                     />
+                    <SupportRepertorioAdmMinisterio
+                        enabled={enabledRepertorio}
+                        setEnabled={setEnabledRepertorio}
+                    />
+                    {enabledRepertorio ? (
+                        <>
+                            <SupportMusicAdmMinisterio
+                                enabled={enabledMusic}
+                                setEnabled={setEnabledMusic}
+                            />
+                            <SupportDancaAdmMinisterio
+                                enabled={enabledDance}
+                                setEnabled={setEnabledDance}
+                            />
+                        </>
+                    ) : (
+                        <></>
+                    )}
                     <LabelInputH>Coordenador do ministério</LabelInputH>
                     <AdmListSelectUserH
                         containerStyle={{

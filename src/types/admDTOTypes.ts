@@ -104,6 +104,19 @@ export interface ListMinisterioRawDTO {
   objetivos: string[];
 }
 
+export interface ListMinisterioRawV2DTO {
+  id: string;
+  nome: string;
+  coordenadorId: string;
+  viceCoordenadorId: string;
+  descricao: string;
+  imagem: string;
+  objetivos: string[];
+  hasRepertorio: boolean;
+  hasMusic: boolean;
+  hasDance: boolean;
+}
+
 export interface ListMinisterioDTO {
   id: string;
   nome: string;
@@ -154,4 +167,16 @@ export interface MinisterioAdmDTO {
   objetivos: string[];
   coordenadorId: string;
   viceCoordenadorId: string;
+}
+
+export interface MinisterioAdmDTOV2 {
+  nome: string;
+  descricao: string;
+  imagem: string;
+  objetivos: string[];
+  coordenadorId: string;
+  viceCoordenadorId: string;
+  hasRepertorio?: boolean;
+  hasMusic?: boolean;
+  hasDance?: boolean;
 }

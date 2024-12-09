@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Textarea from "@mui/joy/Textarea";
 import { Button, TextField } from "@mui/material";
-import { addMinisterioAdmService } from "api/admin/ministerios/admMinisterioAPI";
+import { addMinisterioV2AdmService } from "api/admin/ministerios/admMinisterioAPI";
 import AdmListSelectUserH from "components/AdmListSelectUserH";
 import { LabelInputH } from "components/LabelInputH/style";
 import SelectImageContainerH from "components/SelectImageContainerH";
@@ -14,10 +14,13 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
     MembroResponseListDTO,
-    MinisterioAdmDTO,
+    MinisterioAdmDTOV2
 } from "types/admDTOTypes";
 import * as yup from "yup";
 import ObjetivosAdmMinisterio from "./components/ObjetivosAdmMinisterio";
+import SupportDancaAdmMinisterio from "./components/SupportDancaAdmMinisterio";
+import SupportMusicAdmMinisterio from "./components/SupportMusicAdmMinisterio";
+import SupportRepertorioAdmMinisterio from "./components/SupportRepertorioAdmMinisterio";
 import { AdmMinisterioForms } from "./style";
 
 const schema = yup
@@ -57,24 +60,34 @@ const AdmAdicionarMinisterio = () => {
     const [errorViceCoordenador, setErrorViceCoordenador] =
         useState<boolean>(false);
 
+    const [enabledRepertorio, setEnabledRepertorio] =
+        useState<boolean>(false);
+    const [enabledMusic, setEnabledMusic] = useState<boolean>(false);
+    const [enabledDance, setEnabledDance] = useState<boolean>(false);
+
     const onSubmit = async (data: any) => {
         if (!validateForms()) {
             return;
         }
 
         try {
-            const dto: MinisterioAdmDTO = {
+            const dto: MinisterioAdmDTOV2 = {
                 coordenadorId: coordenador?.id || "",
                 descricao: data.descricao,
                 imagem: imageMinisterio?.toString() || "",
                 nome: data.nome,
                 objetivos,
                 viceCoordenadorId: viceCoordenador?.id || "",
+                hasRepertorio: enabledRepertorio,
+                hasDance: enabledDance && enabledRepertorio,
+                hasMusic: enabledMusic && enabledRepertorio,
             };
 
-            const response = await addMinisterioAdmService(dto);
+            const response = await addMinisterioV2AdmService(dto);
             if (response) {
-                enqueueSnackbar("Ministério adicionado com sucesso", { variant: "success" });
+                enqueueSnackbar("Ministério adicionado com sucesso", {
+                    variant: "success",
+                });
                 navigation(-1);
             }
         } catch (error) {
@@ -136,6 +149,24 @@ const AdmAdicionarMinisterio = () => {
                         objetivos={objetivos}
                         setObjetivos={setObjetivos}
                     />
+                    <SupportRepertorioAdmMinisterio
+                        enabled={enabledRepertorio}
+                        setEnabled={setEnabledRepertorio}
+                    />
+                    {enabledRepertorio ? (
+                        <>
+                            <SupportMusicAdmMinisterio
+                                enabled={enabledMusic}
+                                setEnabled={setEnabledMusic}
+                            />
+                            <SupportDancaAdmMinisterio
+                                enabled={enabledDance}
+                                setEnabled={setEnabledDance}
+                            />
+                        </>
+                    ) : (
+                        <></>
+                    )}
                     <LabelInputH>Coordenador do ministério</LabelInputH>
                     <AdmListSelectUserH
                         containerStyle={{
