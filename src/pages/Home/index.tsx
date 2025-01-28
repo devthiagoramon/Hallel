@@ -1,44 +1,28 @@
 import ValidateToken from "utils/validateToken";
-import CardAssociation from "./Cards/CardAssociation/CardAssociation";
-import CardGiving from "./Cards/CardGiving";
-import CarouselEvents from "./Carousels/CarouselEvents";
-import CarouselSchedules from "./Carousels/CarouselSchedules";
-import MainCarousel from "./Carousels/MainCarousel";
 import {
-    ContainerCards,
-    ContainerHomeEvents,
-    ContainerItens,
-    ContainerSchedules,
-    ContainerWelcome,
     HomeContainer,
-    TittleWelcome,
+    HomeWelcomeContainer,
+    WelcomeTextContainer
 } from "./style";
+
+import wave_homepage from "../../assets/wave-haikei.svg";
+import MainCarousel from "./Carousels/MainCarousel";
 
 const Home = () => {
     return (
         <>
             <ValidateToken />
             <HomeContainer>
-                <ContainerItens>
-                    <ContainerWelcome>
-                        <TittleWelcome>
-                            Bem-vindo à Comunidade Católica Hallel
-                        </TittleWelcome>
-                        <MainCarousel />
-                    </ContainerWelcome>
-                    <ContainerSchedules>
-                        <TittleWelcome>Horários</TittleWelcome>
-                        <CarouselSchedules />
-                    </ContainerSchedules>
-                </ContainerItens>
-                <ContainerHomeEvents>
-                    <TittleWelcome>Eventos</TittleWelcome>
-                    <CarouselEvents />
-                </ContainerHomeEvents>
-                <ContainerCards>
-                    <CardAssociation />
-                    <CardGiving />
-                </ContainerCards>
+                <HomeWelcomeContainer>
+                    <WelcomeTextContainer>
+                        <label className="strong">Seja bem vindo</label>
+                        <span className="description">
+                            Somos a Comunidade Católica Hallel e recebemos você de
+                            braços aberto
+                        </span>
+                        <MainCarousel background_image={wave_homepage} />
+                    </WelcomeTextContainer>
+                </HomeWelcomeContainer>
             </HomeContainer>
         </>
     );

@@ -4,6 +4,7 @@
   "private": true,
   "format": "prettier --write \"src/**/*.{js,jsx,tsx}\"",
   "lint": "eslint \"src/**/*.{js,jsx,tsx}\" --quiet",
+  "homepage": "http://ec2-18-224-17-211.us-east-2.compute.amazonaws.com",
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
