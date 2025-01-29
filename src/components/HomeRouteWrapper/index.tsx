@@ -14,10 +14,7 @@ const HomeRouteWrapper = ({ children }: HomeRouteWrapperProps) => {
                     "Início",
                     "Eventos",
                     "Ministérios",
-                    "Doações",
                     "Igreja",
-                    "Cursos",
-                    "Loja",
                 ]}
             />
             {children}

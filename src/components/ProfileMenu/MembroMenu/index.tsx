@@ -24,7 +24,7 @@ const MembroMenu = () => {
             <MenuItem>Participação em eventos</MenuItem>
             <MenuItem>Participação em retiros</MenuItem>
             <MenuDivider />
-            <MenuItem style={{ color: "#F44336" }}>Sair</MenuItem>
+            <MenuItem onClick={() => { localStorage.clear(); window.location.reload() }} style={{ color: "#F44336" }}>Sair</MenuItem>
         </>
     );
 };

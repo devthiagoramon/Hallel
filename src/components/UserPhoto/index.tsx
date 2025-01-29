@@ -15,7 +15,7 @@ const UserPhoto = ({ photoStyle, size, iconColor }: UserPhotoProps) => {
 
     if (photo === "") {
         return (
-            <UserCircle size={size || 60} style={photoStyle} color={iconColor || "#FAFAFA"} />
+            <UserCircle size={size || 60} style={photoStyle} color={iconColor || "#252525"} />
         );
     } else {
         return (

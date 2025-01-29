@@ -1,14 +1,25 @@
-import { Menu, MenuItem } from "@mui/material";
+import { Divider, Menu, MenuItem, Modal } from "@mui/material";
+import { useClick } from "@szhsin/react-menu";
 import ProfileMenu from "components/ProfileMenu";
-import { ArrowLineUpRight, CaretDown, CaretUp } from "phosphor-react";
-import { useState } from "react";
+import {
+    ArrowLineUpRight,
+    CaretDown,
+    CaretUp,
+    List,
+} from "phosphor-react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { isTokenExist } from "utils/mainUtils";
 import Logo from "../../../assets/logoHallelHD.png";
+import MenuProfileMobile from "./components/MenuProfileMobile";
 import {
     ButtonTittle,
     ContainerHeader,
     ContainerItens,
+    ContainerModalMobileMenu,
+    HamburgerMobileHeader,
     Image,
+    MobileMenu,
     Title,
 } from "./styles";
 
@@ -23,6 +34,13 @@ const HeaderHome = ({ titles }: Props) => {
     );
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const buttonModalProfileRef = useRef<HTMLButtonElement>(null);
+    const [isOpenProfileMenu, setIsOpenProfileMenu] = useState(false);
+    const anchorProps = useClick(
+        isOpenProfileMenu,
+        setIsOpenProfileMenu,
+    );
 
     const handleNavigation = (path: string) => {
         navigate(path);
@@ -66,9 +84,72 @@ const HeaderHome = ({ titles }: Props) => {
         setOpenMenuIndex(null);
     };
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (showMobileMenu && window.innerWidth > 768)
+                setShowMobileMenu(false);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [window]);
+
     return (
         <ContainerHeader>
             <Image src={Logo} />
+            <HamburgerMobileHeader
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+            >
+                <List className="icon" />
+            </HamburgerMobileHeader>
+
+            <Modal
+                open={showMobileMenu}
+                onClose={() => setShowMobileMenu(false)}
+            >
+                <ContainerModalMobileMenu>
+                    <MobileMenu>
+                        {titles.map((title, index) => (
+                            <button className="button">{title}</button>
+                        ))}
+                        <div style={{ marginTop: 8 }}></div>
+                        {isTokenExist() ? (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    columnGap: 16,
+                                    alignItems: "center",
+                                }}
+                            >
+                                <button
+                                    ref={buttonModalProfileRef}
+                                    {...anchorProps}
+                                    className="button"
+                                >
+                                    Perfil
+                                </button>
+                                <MenuProfileMobile
+                                    isOpen={isOpenProfileMenu}
+                                    setIsOpen={setIsOpenProfileMenu}
+                                    ref={buttonModalProfileRef}
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                <Divider
+                                    variant="middle"
+                                    flexItem
+                                    orientation="horizontal"
+                                />
+                                <button className="button-cadastro">Cadastrar</button>
+                                <button className="button">Login</button>
+                            </>
+                        )}
+                    </MobileMenu>
+                </ContainerModalMobileMenu>
+            </Modal>
+
             <ContainerItens>
                 {titles.map((title, index) => (
                     <div key={index}>
@@ -76,14 +157,14 @@ const HeaderHome = ({ titles }: Props) => {
                             onClick={(event: any) => handleClick(event, index)}
                         >
                             <Title>{title}</Title>
-                            {[4, 5].includes(index) &&
+                            {[3].includes(index) &&
                                 (openMenuIndex === index ? (
-                                    <CaretUp color="white" size={23} />
+                                    <CaretUp color="#252525" size={23} />
                                 ) : (
-                                    <CaretDown color="white" size={23} />
+                                    <CaretDown color="#252525" size={23} />
                                 ))}
                         </ButtonTittle>
-                        {[4, 5].includes(index) && openMenuIndex === index && (
+                        {[3].includes(index) && openMenuIndex === index && (
                             <Menu
                                 id={`basic-menu-${index}`}
                                 anchorEl={anchorEl}
@@ -100,7 +181,7 @@ const HeaderHome = ({ titles }: Props) => {
                                     },
                                 }}
                             >
-                                {index === 4 ? (
+                                {index === 3 ? (
                                     <>
                                         <MenuItem
                                             onClick={() => {
@@ -165,8 +246,46 @@ const HeaderHome = ({ titles }: Props) => {
                         )}
                     </div>
                 ))}
+                {isTokenExist() ? (
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            columnGap: 16,
+                        }}
+                    >
+                        <Divider
+                            variant="middle"
+                            flexItem
+                            orientation="vertical"
+                        />
+                        <ProfileMenu />
+                    </div>
+                ) : (
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            columnGap: 16,
+                        }}
+                    >
+                        <Divider
+                            variant="middle"
+                            flexItem
+                            orientation="vertical"
+                        />
+                        <ButtonTittle
+                            onClick={() => navigate("/signIn")}
+                            style={{ backgroundColor: "#033117" }}
+                        >
+                            <Title style={{ color: "#FAFAFA" }}>Cadastrar</Title>
+                        </ButtonTittle>
+                        <ButtonTittle onClick={() => navigate("/signUp")}>
+                            <Title>Login</Title>
+                        </ButtonTittle>
+                    </div>
+                )}
             </ContainerItens>
-            <ProfileMenu />
         </ContainerHeader>
     );
 };
