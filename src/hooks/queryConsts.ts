@@ -1,6 +1,7 @@
 export const QUERIES = {
   // EVENTS
   LIST_EVENTS: "LIST_EVENTS",
+  LIST_EVENTS_PUBLIC: "LIST_EVENTS_PUBLIC",
 };
 
 export const ADM_QUERIES = {
